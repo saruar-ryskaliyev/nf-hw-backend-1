@@ -7,6 +7,7 @@ interface IEvent extends Document {
     date: Date;
     location: string;
     duration: string;
+    rating: number;
 }
 
 const EventSchema: Schema = new Schema({
@@ -16,6 +17,7 @@ const EventSchema: Schema = new Schema({
     date: { type: Date, required: true },
     location: { type: String, required: true },
     duration: { type: String, required: true },
+    rating: { type: Number, required: true },
 });
 
 const EventModel = mongoose.model<IEvent>('Event', EventSchema);

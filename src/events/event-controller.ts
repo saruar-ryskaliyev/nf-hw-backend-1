@@ -26,15 +26,24 @@ class EventController {
             if (!token) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
-            
 
             const userCity = getCityFromToken(token);
             if (!userCity) {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
 
-            const events = await this.eventService.getEventsByCity(userCity);
-            res.status(200).json(events);
+            const page = parseInt(req.query.page as string) || 1;
+            const limit = parseInt(req.query.limit as string) || 10;
+            const sortBy = req.query.sortBy as string || 'date'; 
+            const sortDirection = req.query.sortDirection as string || 'asc'; 
+
+            const { events, total } = await this.eventService.getEventsByCity(userCity, page, limit, sortBy, sortDirection);
+            res.status(200).json({
+                events,
+                total,
+                page,
+                totalPages: Math.ceil(total / limit)
+            });
         } catch (error: any) {
             res.status(500).json({ error: error.message });
         }

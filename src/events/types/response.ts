@@ -5,4 +5,5 @@ export interface Event {
   date: Date;
   location: string;
   duration: string;
+  rating: number;
 }

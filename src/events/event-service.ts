@@ -7,8 +7,15 @@ class EventService {
         return await EventModel.findOne({ id }).exec();
     }
 
-    async getEventsByCity(city: string): Promise<IEvent[]> {
-        return await EventModel.find({ location: { $regex: new RegExp(city, 'i') } }).exec();
+    async getEventsByCity(city: string, page: number, limit: number, sortBy: string = 'date', sortDirection: string = 'asc'): Promise<{ events: IEvent[], total: number }> {
+        const sortOption: { [key: string]: 1 | -1 } = { [sortBy]: sortDirection === 'desc' ? -1 : 1 };
+        const total = await EventModel.countDocuments({ location: { $regex: new RegExp(city, 'i') } }).exec();
+        const events = await EventModel.find({ location: { $regex: new RegExp(city, 'i') } })
+            .sort(sortOption)
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .exec();
+        return { events, total };
     }
 
     async createEvent(eventDto: CreateEventDto): Promise<IEvent> {
@@ -20,6 +27,7 @@ class EventService {
             date: new Date(eventDto.date),
             location: eventDto.location,
             duration: eventDto.duration,
+            rating: eventDto.rating
         });
         return await newEvent.save();
     }
