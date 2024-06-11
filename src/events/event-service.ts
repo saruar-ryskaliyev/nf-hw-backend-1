@@ -7,8 +7,8 @@ class EventService {
         return await EventModel.findOne({ id }).exec();
     }
 
-    async getEvents(): Promise<IEvent[]> {
-        return await EventModel.find().exec();
+    async getEventsByCity(city: string): Promise<IEvent[]> {
+        return await EventModel.find({ location: { $regex: new RegExp(city, 'i') } }).exec();
     }
 
     async createEvent(eventDto: CreateEventDto): Promise<IEvent> {

@@ -44,11 +44,11 @@ class AuthService {
   }
 
   private generateJwt(user: IUser): string {
-    return jwt.sign({ id: user._id, email: user.email }, this.jwtSecret, { expiresIn: '15m' });
+    return jwt.sign({ id: user._id, email: user.email, city: user.city }, this.jwtSecret, { expiresIn: '15m' });
   }
 
   private generateRefreshToken(user: IUser): string {
-    return jwt.sign({ id: user._id, email: user.email }, this.jwtRefreshSecret, { expiresIn: '7d' });
+    return jwt.sign({ id: user._id, email: user.email, city: user.city }, this.jwtRefreshSecret, { expiresIn: '7d' });
   }
 
   verifyJwt(token: string): any {

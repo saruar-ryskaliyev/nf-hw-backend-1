@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { CreateEventDto } from './dtos/CreateEvent.dot';
 import EventService from './event-service';
+import { getCityFromToken } from './utils/jwt-utils';
 
 class EventController {
     private eventService: EventService;
@@ -21,7 +22,18 @@ class EventController {
 
     getEvents = async (req: Request, res: Response) => {
         try {
-            const events = await this.eventService.getEvents();
+            const token = req.headers.authorization?.split(' ')[1];
+            if (!token) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+            
+
+            const userCity = getCityFromToken(token);
+            if (!userCity) {
+                return res.status(401).json({ error: 'Unauthorized' });
+            }
+
+            const events = await this.eventService.getEventsByCity(userCity);
             res.status(200).json(events);
         } catch (error: any) {
             res.status(500).json({ error: error.message });
